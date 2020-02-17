@@ -1,4 +1,4 @@
-include(":jsonrpc2")
+include(":retrograd")
 include(":sample-app")
 
 rootProject.name = "Retrograd"
