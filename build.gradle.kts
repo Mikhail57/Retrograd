@@ -22,6 +22,9 @@ buildscript {
     dependencies {
         classpath("com.android.tools.build:gradle:4.0.0-alpha09")
         classpath(kotlin("gradle-plugin", version = "1.3.61"))
+        classpath("com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4")
+        classpath("com.github.dcendents:android-maven-gradle-plugin:2.1")
+        classpath("org.jetbrains.dokka:dokka-gradle-plugin:0.10.1")
     }
 }
 

@@ -13,39 +13,51 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import java.time.LocalDateTime
-import java.time.ZoneId
+import org.gradle.api.publish.maven.MavenPom
+import java.io.FileInputStream
+import java.util.*
 
 plugins {
     `java-library`
+    `maven-publish`
     kotlin("jvm")
     id("com.jfrog.bintray")
     id("org.jetbrains.dokka")
+    id("com.github.dcendents.android-maven")
 }
 
 kotlinProject()
 
-//val jcenter_user: String = rootProject.findProperty("jcenter_user") as String
-//val jcenter_api_key: String by project(":")
-fun findProperty(s: String) = project.findProperty(s) as String?
+group = DefaultValues.groupId
+val properties = Properties().apply {
+    load(FileInputStream(project.rootProject.file("local.properties")))
+}
+
+fun findProperty(s: String): String? = properties.getProperty(s)
 
 bintray {
-    user = findProperty("jcenter_user")
-    println(user)
-//    key = jcenter_api_key
+    user = findProperty("jcenter.user")
+    key = findProperty("jcenter.apiKey")
 
-    setConfigurations("archive")
+    override = true
+
+    setConfigurations("archives")
     pkg.apply {
         repo = "Retrograd"
         name = "retrograd"
+        userOrg = "retrograd"
         setLicenses("Apache-2.0")
         vcsUrl = "https://github.com/Mikhail57/Retrograd"
 
         version.apply {
-            name = "0.1-alpha"
-            desc = "JSON RPC 2 library for Android 0.1-alpha"
-            released = LocalDateTime.now().atZone(ZoneId.of("UTC+3")).toString()
+            name = DefaultValues.targetVersion
+            desc = "JSON RPC 2 library for Android ${DefaultValues.targetVersion}"
+            released = Date().toString()
 
+            vcsTag = DefaultValues.targetVersion
+            vcsUrl = "https://github.com/Mikhail57/Retrograd"
+
+            publish = true
         }
     }
 }
@@ -67,6 +79,20 @@ artifacts {
     archives(tasks["sourcesJar"])
 }
 
+val publicationName = "retrograd"
+publishing {
+    publications {
+        create<MavenPublication>(publicationName) {
+            from(components["java"])
+            artifactId = "retrograd"
+            version = DefaultValues.targetVersion
+            artifact(tasks["sourcesJar"])
+            artifact(tasks["dokkaJar"])
+            pom.addDependencies()
+        }
+    }
+}
+
 dependencies {
     compileOnly(Dependencies.android)
 
@@ -77,4 +103,16 @@ dependencies {
     testImplementation(Dependencies.junit)
     testImplementation(Dependencies.mockk)
     testImplementation(Dependencies.kluent)
+}
+
+fun MavenPom.addDependencies() = withXml {
+    asNode().appendNode("dependencies").let { depNode ->
+        configurations.compile.get().allDependencies.forEach {
+            depNode.appendNode("dependency").apply {
+                appendNode("groupId", it.group)
+                appendNode("artifactId", it.name)
+                appendNode("version", it.version)
+            }
+        }
+    }
 }

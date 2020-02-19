@@ -23,3 +23,8 @@ object Dependencies {
     const val mockk = "io.mockk:mockk:1.9.3"
     const val kluent = "org.amshove.kluent:kluent:1.59"
 }
+
+object DefaultValues {
+    const val groupId = "com.github.mikhail57"
+    const val targetVersion = "0.1-alpha"
+}
