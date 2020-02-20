@@ -23,11 +23,14 @@ buildscript {
 }
 
 plugins {
-    kotlin("jvm") version "1.3.61"
+    id("nebula.kotlin") version "1.3.61"
     id("org.jetbrains.dokka") version "0.10.1"
     id("nebula.dependency-lock") version "8.8.0"
-    id("nebula.nebula-bintray") version "8.3.0"
-//    id("nebula.release") version "13.0.0"
+    id("nebula.nebula-bintray-publishing") version "8.3.0"
+    id("nebula.maven-publish") version "17.0.5"
+    id("nebula.source-jar") version "17.0.5"
+    id("nebula.javadoc-jar") version "17.0.5"
+    id("nebula.release") version "14.0.5"
 }
 
 repositories {
@@ -35,17 +38,15 @@ repositories {
 }
 
 group = DefaultValues.groupId
+version = DefaultValues.targetVersion
+description = "JSON RPC 2.0 Client Library"
 
-task("sourcesJar", type = Jar::class) {
-    from(sourceSets.main.get().java.srcDirs)
-    archiveClassifier.set("sources")
-}
 
-task("dokkaJar", type = Jar::class) {
-    dependsOn("dokka")
-    archiveClassifier.set("dokka")
-    val dokkaTask = tasks["dokka"] as org.jetbrains.dokka.gradle.DokkaTask
-    from(dokkaTask.outputDirectory)
+tasks {
+    dokka {
+        outputFormat = "javadoc"
+    }
+
 }
 
 dependencies {
@@ -68,8 +69,14 @@ bintray {
 
     licenses.add("Apache-2.0")
 
+    syncToMavenCentral.set(false)
+
     userOrg.set("retrograd")
+    pkgName.set("retrograd")
+    repo.set("Retrograd")
+
     vcsUrl.set("https://github.com/Mikhail57/Retrograd")
+    labels.addAll("kotlin", "json rpc 2.0", "client")
 }
 
 
