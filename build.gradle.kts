@@ -38,7 +38,6 @@ repositories {
 }
 
 group = DefaultValues.groupId
-version = DefaultValues.targetVersion
 description = "JSON RPC 2.0 Client Library"
 
 

@@ -26,5 +26,4 @@ object Dependencies {
 
 object DefaultValues {
     const val groupId = "com.github.mikhail57"
-    const val targetVersion = "0.1-alpha"
 }
