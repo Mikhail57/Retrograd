@@ -26,7 +26,7 @@ plugins {
     id("nebula.kotlin") version "1.3.61"
     id("org.jetbrains.dokka") version "0.10.1"
     id("nebula.dependency-lock") version "8.8.0"
-    id("nebula.nebula-bintray-publishing") version "8.3.0"
+    id("nebula.nebula-bintray") version "8.3.0"
     id("nebula.maven-publish") version "17.0.5"
     id("nebula.source-jar") version "17.0.5"
     id("nebula.javadoc-jar") version "17.0.5"
