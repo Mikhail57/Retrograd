@@ -13,28 +13,69 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import java.io.FileInputStream
+import java.util.*
 
 buildscript {
     repositories {
-        google()
-        jcenter()
-    }
-    dependencies {
-        classpath("com.android.tools.build:gradle:4.0.0-alpha09")
-        classpath(kotlin("gradle-plugin", version = "1.3.61"))
-        classpath("com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4")
-        classpath("com.github.dcendents:android-maven-gradle-plugin:2.1")
-        classpath("org.jetbrains.dokka:dokka-gradle-plugin:0.10.1")
-    }
-}
-
-allprojects {
-    repositories {
-        google()
         jcenter()
     }
 }
 
-tasks.register("clean", Delete::class) {
-    delete(rootProject.buildDir)
+plugins {
+    kotlin("jvm") version "1.3.61"
+    id("org.jetbrains.dokka") version "0.10.1"
+    id("nebula.dependency-lock") version "8.8.0"
+    id("nebula.nebula-bintray") version "8.3.0"
+//    id("nebula.release") version "13.0.0"
+}
+
+repositories {
+    jcenter()
+}
+
+group = DefaultValues.groupId
+
+task("sourcesJar", type = Jar::class) {
+    from(sourceSets.main.get().java.srcDirs)
+    archiveClassifier.set("sources")
+}
+
+task("dokkaJar", type = Jar::class) {
+    dependsOn("dokka")
+    archiveClassifier.set("dokka")
+    val dokkaTask = tasks["dokka"] as org.jetbrains.dokka.gradle.DokkaTask
+    from(dokkaTask.outputDirectory)
+}
+
+dependencies {
+    compileOnly(Dependencies.android)
+
+    implementation(Dependencies.okhttp)
+    implementation(Dependencies.rxjava)
+    implementation(Dependencies.gson)
+
+    implementation(kotlin("stdlib"))
+
+    testImplementation(Dependencies.junit)
+    testImplementation(Dependencies.mockk)
+    testImplementation(Dependencies.kluent)
+}
+
+bintray {
+    user.set(findLocalProperty("jcenter.user"))
+    apiKey.set(findLocalProperty("jcenter.apiKey"))
+
+    licenses.add("Apache-2.0")
+
+    userOrg.set("retrograd")
+    vcsUrl.set("https://github.com/Mikhail57/Retrograd")
+}
+
+
+fun findLocalProperty(s: String): String? {
+    val properties: Properties = Properties().apply {
+        load(FileInputStream(rootProject.file("local.properties")))
+    }
+    return properties.getProperty(s)
 }
