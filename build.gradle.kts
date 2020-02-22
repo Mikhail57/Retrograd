@@ -45,7 +45,9 @@ tasks {
     dokka {
         outputFormat = "javadoc"
     }
-
+    test {
+        useJUnitPlatform()
+    }
 }
 
 dependencies {

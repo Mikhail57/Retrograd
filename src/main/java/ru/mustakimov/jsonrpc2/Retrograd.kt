@@ -172,7 +172,7 @@ class Retrograd private constructor(
             this.baseUrl = baseUrl
         }
 
-        fun <T : Interceptor> addInterceptor(interceptor: T) {
+        fun <T : Interceptor> addInterceptor(interceptor: T) = this.apply {
             interceptors.add(interceptor)
         }
 
