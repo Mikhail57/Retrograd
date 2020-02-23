@@ -26,14 +26,40 @@ import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
 import java.net.URL
+import kotlin.reflect.KClass
 
-
+/**
+ * Retrograd adapts a Java interface to JSON RPC 2.0 calls, by using annotations on interface and
+ * declared methods to define how RPC calls are made. Create instance using [the builder][Builder]
+ * and pass your interface to the [create] method to generate an implementation.
+ *
+ * For example,
+ * ```kotlin
+ * val retrograd: Retrograd = Retrograd.Builder()
+ *     .baseUrl("http://rpc.example.com/")
+ *     .build()
+ *
+ * val myApi: MyApi = retrograd.create(MyApi::class.java)
+ * val response: Single<Boolean> = retrograd.isValidPhone("+7(912)123-45-67")
+ * ```
+ */
 class Retrograd private constructor(
     val gson: Gson,
     val callFactory: Call.Factory,
     val baseUrl: HttpUrl,
     val interceptors: List<Interceptor>
 ) {
+    /**
+     * Create an implementation of the JSON RPC 2.0 API services, using interface annotated by [JsonRpc].
+     *
+     * The relative path for the given service is obtained from the interface [annotation][JsonRpc].
+     *
+     * Method parameters currently can be only named.
+     *
+     * Named parameters should be annotated with [Param] annotation.
+     *
+     * By default, methods return a [Single][io.reactivex.Single] which represent JSON RPC 2.0 response body.
+     */
     @Suppress("UNCHECKED_CAST") //
     fun <T> create(service: Class<T>): T {
         validateServiceInterface(service)
@@ -55,6 +81,12 @@ class Retrograd private constructor(
                 }
             }) as T
     }
+
+    /**
+     * Kotlin class variant of the [create] method
+     * @see create
+     */
+    fun <T : Any> create(service: KClass<T>): T = create(service.java)
 
     private fun loadServiceMethod(method: Method): ServiceMethod<*> {
         return ServiceMethod.parseAnnotations<Any>(this, method)
