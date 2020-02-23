@@ -26,6 +26,8 @@ import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
 import java.net.URL
+import java.util.Deque
+import java.util.ArrayDeque
 import kotlin.reflect.KClass
 
 /**
@@ -99,6 +101,20 @@ class Retrograd private constructor(
         }
         if (service.getAnnotation(JsonRpc::class.java) == null) {
             throw java.lang.IllegalArgumentException("API declaration must be annotated with @${JsonRpc::class.java.simpleName}")
+        }
+
+        val check: Deque<Class<*>> = ArrayDeque()
+        check.add(service)
+        while (check.isNotEmpty()) {
+            val candidate = check.removeFirst()
+            if (candidate.typeParameters.isNotEmpty()) {
+                val builder = StringBuilder("Type parameters are not supported on ").append(candidate.name)
+                if (candidate != service) {
+                    builder.append(" which is an interface of ").append(service.name)
+                }
+                throw IllegalArgumentException(builder.toString())
+            }
+            check.addAll(candidate.interfaces)
         }
     }
 
