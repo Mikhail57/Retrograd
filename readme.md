@@ -46,7 +46,7 @@ interface InquiryApi {
 `@JsonRpc("inquiry/rpc")` - required annotation for the `interface`. As an optional parameter you can provide URL to be 
 resolved against `baseUrl` (described below).
 
-`@JsonRpcMethod("get")` - annotation to mark current method as JSON RPC method. Return type of th funtion marked with 
+`@JsonRpcMethod("get")` - annotation to mark current method as JSON RPC method. Return type of the function marked with 
 this annotation **currently** should be `Single<*>`. As the parameters there is parameters for remote method (will be
 used in JSON RPC 2.0 request).
 
