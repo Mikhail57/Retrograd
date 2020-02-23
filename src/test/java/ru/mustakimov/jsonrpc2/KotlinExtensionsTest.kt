@@ -14,19 +14,21 @@
  * limitations under the License.
  */
 
-object Dependencies {
-    const val android = "com.google.android:android:1.6_r2"
-    const val rxjava = "io.reactivex.rxjava2:rxjava:2.2.14"
-    const val okhttp = "com.squareup.okhttp3:okhttp:4.2.2"
-    const val gson = "com.google.code.gson:gson:2.8.6"
+package ru.mustakimov.jsonrpc2
 
-    // Tests
-    const val junit = "org.junit.jupiter:junit-jupiter:5.5.2"
-    const val mockk = "io.mockk:mockk:1.9.3"
-    const val kluent = "org.amshove.kluent:kluent:1.59"
-    const val mockWebServer = "com.squareup.okhttp3:mockwebserver:4.4.0"
-}
+import okhttp3.mockwebserver.MockWebServer
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Test
 
-object DefaultValues {
-    const val groupId = "com.github.mikhail57"
+internal class KotlinExtensionsTest {
+    private val server = MockWebServer()
+
+    @JsonRpc("/")
+    interface Valid
+
+    @Test
+    fun `create extension method`() {
+        val retrograd = Retrograd.Builder().baseUrl(server.url("/")).build()
+        retrograd.create<Valid>()
+    }
 }

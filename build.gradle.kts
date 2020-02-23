@@ -62,6 +62,7 @@ dependencies {
     testImplementation(Dependencies.junit)
     testImplementation(Dependencies.mockk)
     testImplementation(Dependencies.kluent)
+    testImplementation(Dependencies.mockWebServer)
 }
 
 bintray {
