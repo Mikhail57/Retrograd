@@ -6,7 +6,7 @@ You should add repository with this library to your repositories list. For Gradl
 ```groovy
 repositories {
     // ...
-    maven { url 'https://dl.bintray.com/retrograd/Retrograd' }
+    jcenter()
 }
 ```
 Android users should place this into the `allprojects` section of base `build.gradle` file.
