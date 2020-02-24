@@ -21,7 +21,6 @@ import okhttp3.Call
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient
-import ru.mustakimov.jsonrpc2.http.GET
 import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
@@ -72,7 +71,6 @@ class Retrograd private constructor(
             arrayOf(service),
             object : InvocationHandler {
                 val emptyArgs: Array<Any> = emptyArray()
-                val endpoint: HttpUrl = endpoint
 
                 override fun invoke(proxy: Any, method: Method, args: Array<out Any>?): Any? {
                     if (method.declaringClass == Object::class.java) {
@@ -139,14 +137,14 @@ class Retrograd private constructor(
         /**
          * Set the API base URL.
          *
-         * @see .baseUrl
+         * @see [baseUrl][Retrograd.Builder.baseUrl]
          */
         fun baseUrl(baseUrl: URL): Builder = baseUrl(baseUrl.toString().toHttpUrl())
 
         /**
          * Set the API base URL.
          *
-         * @see .baseUrl
+         * @see [baseUrl][Retrograd.Builder.baseUrl]
          */
         fun baseUrl(baseUrl: String): Builder = baseUrl(baseUrl.toHttpUrl())
 
@@ -154,7 +152,7 @@ class Retrograd private constructor(
          * Set the API base URL.
          *
          *
-         * The specified endpoint values (such as with [@GET][GET]) are resolved against this
+         * The specified endpoint values (such as with [@JsonRpc][JsonRpc]) are resolved against this
          * value using [HttpUrl.resolve]. The behavior of this matches that of an
          * `<a href="">` link on a website resolving on the current URL.
          *
