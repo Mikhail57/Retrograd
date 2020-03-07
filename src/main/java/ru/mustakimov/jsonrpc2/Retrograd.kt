@@ -71,10 +71,14 @@ class Retrograd private constructor(
             arrayOf(service),
             object : InvocationHandler {
                 val emptyArgs: Array<Any> = emptyArray()
+                val platform = Platform.INSTANCE
 
                 override fun invoke(proxy: Any, method: Method, args: Array<out Any>?): Any? {
-                    if (method.declaringClass == Object::class.java) {
-                        return method.invoke(this, args)
+                    if (method.declaringClass == Any::class.java) {
+                        return method.invoke(this, *(args ?: emptyArgs))
+                    }
+                    if (platform.isDefaultMethod(method)) {
+                        return platform.invokeDefaultMethod(method, service, proxy, args)
                     }
 
                     return loadServiceMethod(method).invoke(args ?: emptyArgs, endpoint)

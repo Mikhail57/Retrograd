@@ -30,9 +30,9 @@ import java.lang.reflect.Method
 import kotlin.random.Random
 
 class ServiceMethod<T>(
-    val methodName: String,
-    val retrograd: Retrograd,
-    val method: Method
+    private val methodName: String,
+    private val retrograd: Retrograd,
+    private val method: Method
 ) {
 
     fun invoke(args: Array<out Any?>, url: HttpUrl): T? {

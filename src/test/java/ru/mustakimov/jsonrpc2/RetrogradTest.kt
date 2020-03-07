@@ -17,8 +17,11 @@
 package ru.mustakimov.jsonrpc2
 
 import okhttp3.mockwebserver.MockWebServer
+import org.amshove.kluent.`should be`
 import org.amshove.kluent.`should contain`
+import org.amshove.kluent.`should not be equal to`
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 
 internal class RetrogradTest {
@@ -84,6 +87,17 @@ internal class RetrogradTest {
         val retrograd = Retrograd.Builder().baseUrl(server.url("/")).build()
         assertThrows<IllegalArgumentException> {
             retrograd.create(ExtendingTypeParameter::class)
+        }
+    }
+
+    @Test
+    fun `Default methods should be callable`() {
+        val retrograd = Retrograd.Builder().baseUrl(server.url("/")).build()
+        val valid = retrograd.create(Valid::class)
+        assertDoesNotThrow {
+            valid.toString()
+            valid == valid
+            valid.hashCode()
         }
     }
 
