@@ -23,7 +23,7 @@ buildscript {
 }
 
 plugins {
-    id("nebula.kotlin") version "1.3.61"
+    id("nebula.kotlin") version "1.3.70"
     id("org.jetbrains.dokka") version "0.10.1"
     id("nebula.dependency-lock") version "8.8.0"
     id("nebula.nebula-bintray") version "8.3.0"
