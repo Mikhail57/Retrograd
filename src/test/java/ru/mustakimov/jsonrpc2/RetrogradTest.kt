@@ -16,6 +16,8 @@
 
 package ru.mustakimov.jsonrpc2
 
+import io.reactivex.Single
+import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.amshove.kluent.`should be`
 import org.amshove.kluent.`should contain`
@@ -29,7 +31,35 @@ internal class RetrogradTest {
 
     @JsonRpc("/")
     interface Valid {
+        @JsonRpcMethod("plus")
+        fun validNamedPlusMethod(
+            @Param("a") a: Int,
+            @Param("b") b: Int
+        ): Single<Int>
 
+        @JsonRpcMethod("plus", namedParams = false)
+        fun validUnnamedPlusMethod(
+            @Param("a") a: Int,
+            @Param("b") b: Int
+        ): Single<Int>
+
+        @JsonRpcMethod("plus")
+        fun invalidParamNamedPlusMethod(
+            a: Int,
+            @Param("b") b: Int
+        ): Single<Int>
+
+        @JsonRpcMethod("plus", namedParams = false)
+        fun invalidParamUnnamedPlusMethod(
+            a: Int,
+            @Param("b") b: Int
+        ): Single<Int>
+
+        @JsonRpcMethod("plus")
+        fun invalidReturnType(
+            @Param("a") a: Int,
+            @Param("b") b: Int
+        ): Int
     }
 
     @JsonRpc("/")
@@ -44,6 +74,9 @@ internal class RetrogradTest {
 
     @JsonRpc("/")
     interface ExtendingTypeParameter : TypeParam<String>
+
+    @JsonRpc("/")
+    class InvalidClass
 
     @Test
     fun `Should create api with valid interface`() {
@@ -96,8 +129,79 @@ internal class RetrogradTest {
         val valid = retrograd.create(Valid::class)
         assertDoesNotThrow {
             valid.toString()
+            @Suppress("UnusedEquals")
             valid == valid
             valid.hashCode()
+        }
+    }
+
+    @Test
+    fun `Should call valid method with named params`() {
+        val retrograd = Retrograd.Builder().baseUrl(server.url("/")).build()
+        val valid = retrograd.create(Valid::class)
+
+        server.enqueue(MockResponse().setBody("""{"id": 1, "result": 3}"""))
+
+        val testObserver = valid.validNamedPlusMethod(1, 2).test()
+        testObserver.assertComplete()
+        testObserver.assertResult(3)
+    }
+
+    @Test
+    fun `Should call valid method with unnamed params`() {
+        val retrograd = Retrograd.Builder().baseUrl(server.url("/")).build()
+        val valid = retrograd.create(Valid::class)
+
+        server.enqueue(MockResponse().setBody("""{"id": 1, "result": 3}"""))
+
+        val testObserver = valid.validUnnamedPlusMethod(1, 2).test()
+        testObserver.assertComplete()
+        testObserver.assertResult(3)
+    }
+
+    @Test
+    fun `Shouldn't call invalid method with unannotated named param`() {
+        val retrograd = Retrograd.Builder().baseUrl(server.url("/")).build()
+        val valid = retrograd.create(Valid::class)
+
+        assertThrows<IllegalArgumentException> {
+            valid.invalidParamNamedPlusMethod(1, 2)
+        }.message!! `should contain` "Argument #0 of #invalidParamNamedPlusMethod must be annotated with @Param"
+    }
+
+    @Test
+    fun `Shouldn't call invalid method with unannotated unnamed param`() {
+        val retrograd = Retrograd.Builder().baseUrl(server.url("/")).build()
+        val valid = retrograd.create(Valid::class)
+
+        assertThrows<IllegalArgumentException> {
+            valid.invalidParamUnnamedPlusMethod(1, 2)
+        }.message!! `should contain` "Argument #0 of #invalidParamUnnamedPlusMethod must be annotated with @Param"
+    }
+
+    @Test
+    fun `Shouldn't call method with wrong return type`() {
+        val retrograd = Retrograd.Builder().baseUrl(server.url("/")).build()
+        val valid = retrograd.create(Valid::class)
+
+        assertThrows<IllegalArgumentException> {
+            valid.invalidReturnType(1, 2)
+        }.message!! `should contain` "Only io.reactivex.Single<T> is supported as return type"
+    }
+
+    @Test
+    fun `Should call default interface method`() {
+        val retrograd = Retrograd.Builder().baseUrl(server.url("/")).build()
+        val default = retrograd.create(JavaInterfaces.DefaultJavaInterface::class)
+
+        default.sum(1, 2) `should be` 3
+    }
+
+    @Test
+    fun `Shouldn't create from class`() {
+        val retrograd = Retrograd.Builder().baseUrl(server.url("/")).build()
+        assertThrows<IllegalArgumentException> {
+            retrograd.create(InvalidClass::class)
         }
     }
 
