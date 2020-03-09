@@ -25,6 +25,7 @@ import org.amshove.kluent.`should not be equal to`
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
+import java.util.concurrent.TimeUnit
 
 internal class RetrogradTest {
     var server: MockWebServer = MockWebServer()
@@ -155,6 +156,10 @@ internal class RetrogradTest {
         server.enqueue(MockResponse().setBody("""{"id": 1, "result": 3}"""))
 
         val testObserver = valid.validUnnamedPlusMethod(1, 2).test()
+        val request = server.takeRequest(1, TimeUnit.SECONDS)
+
+        request!!.body.readUtf8() `should contain` """"params":[1,2]"""
+
         testObserver.assertComplete()
         testObserver.assertResult(3)
     }
