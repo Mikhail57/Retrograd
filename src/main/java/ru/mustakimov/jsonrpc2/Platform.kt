@@ -34,10 +34,10 @@ open class Platform internal constructor(
         val constructor: Constructor<Lookup> =
             Lookup::class.java.getDeclaredConstructor(Class::class.java, Int::class.javaPrimitiveType)
         constructor.isAccessible = true
-        return constructor.newInstance(declaringClass, -1 /* trusted */)
+        return constructor.newInstance(declaringClass, -1)
             .unreflectSpecial(method, declaringClass)
             .bindTo(obj)
-            .invokeWithArguments(args)
+            .invokeWithArguments(*args)
     }
 
     companion object {

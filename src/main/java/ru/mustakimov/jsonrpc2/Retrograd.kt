@@ -78,7 +78,7 @@ class Retrograd private constructor(
                         return method.invoke(this, *(args ?: emptyArgs))
                     }
                     if (platform.isDefaultMethod(method)) {
-                        return platform.invokeDefaultMethod(method, service, proxy, args)
+                        return platform.invokeDefaultMethod(method, service, proxy, *(args ?: emptyArgs))
                     }
 
                     return loadServiceMethod(method).invoke(args ?: emptyArgs, endpoint)
