@@ -29,15 +29,19 @@ import ru.mustakimov.jsonrpc2.internal.JsonRpcResponse
 import java.lang.reflect.Method
 import kotlin.random.Random
 
-class ServiceMethod<T>(
+class ServiceMethod<T> private constructor(
     private val methodName: String,
+    private val namedParams: Boolean,
     private val retrograd: Retrograd,
     private val method: Method
 ) {
 
     fun invoke(args: Array<out Any?>, url: HttpUrl): T? {
-        val params = method.jsonRpcParameters(args)
-        val request = JsonRpcRequest(Random.nextLong(), methodName, params)
+        val request: JsonRpcRequest = if (namedParams) {
+            JsonRpcRequest.JsonRpcNamedRequest(Random.nextLong(), methodName, method.jsonRpcNamedParameters(args))
+        } else {
+            JsonRpcRequest.JsonRpcUnnamedRequest(Random.nextLong(), methodName, method.jsonRpcUnnamedParameters(args))
+        }
         retrograd.interceptors.filterIsInstance<RequestInterceptor>().forEach {
             it.handleRequest(request, method.annotations)
         }
@@ -52,7 +56,7 @@ class ServiceMethod<T>(
             .url(url)
             .build()
         @Suppress("UNCHECKED_CAST")
-        return Single.create<Any> { emitter: SingleEmitter<Any> ->
+        return Single.create { emitter: SingleEmitter<Any> ->
             val call = retrograd.callFactory.newCall(req)
             emitter.setCancellable(call::cancel)
             try {
@@ -93,8 +97,10 @@ class ServiceMethod<T>(
             if (!method.returnsSingle) {
                 throw IllegalArgumentException("Only io.reactivex.Single<T> is supported as return type")
             }
-            val methodName = method.getAnnotation(JsonRpcMethod::class.java)?.value ?: method.name
-            return ServiceMethod(methodName, retrograd, method)
+            val annotation = method.getAnnotation(JsonRpcMethod::class.java)
+            val methodName = annotation?.value ?: method.name
+            val named = annotation.namedParams
+            return ServiceMethod(methodName, named, retrograd, method)
         }
     }
 }

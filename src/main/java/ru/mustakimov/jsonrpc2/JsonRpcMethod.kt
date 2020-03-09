@@ -20,5 +20,14 @@ annotation class JsonRpcMethod(
     /**
      * Json RPC method name
      */
-    val value: String
+    val value: String,
+
+    /**
+     * Use named or unnamed params.
+     *
+     * When `true`, uses [Param]'s [value][Param.value] as notation to the param name, otherwise pass params name from code.
+     *
+     * When `false`, uses [Param] as notation to param, passes in defined order.
+     */
+    val namedParams: Boolean = true
 )

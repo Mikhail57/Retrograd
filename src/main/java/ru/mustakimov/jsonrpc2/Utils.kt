@@ -24,19 +24,28 @@ import java.lang.reflect.Type
 val Method.returnsSingle
     get() = this.returnType.canonicalName == Single::class.java.canonicalName
 
-fun Method.jsonRpcParameters(args: Array<out Any?>): Map<String, Any?> {
+fun Method.jsonRpcNamedParameters(args: Array<out Any?>): Map<String, Any?> {
+    return checkArguments()
+        .mapIndexed { i, name -> name to args[i] }
+        .associate { it }
+}
+
+fun Method.jsonRpcUnnamedParameters(args: Array<out Any?>): List<Any?> {
+    return checkArguments()
+        .mapIndexed { i, _ -> args[i] }
+}
+
+private fun Method.checkArguments(): List<String> {
     return parameterAnnotations
         .map {
-            it?.firstOrNull { Param::class.java.isInstance(it) }
+            it?.firstOrNull { p -> Param::class.java.isInstance(p) }
         }
         .mapIndexed { i, annotation ->
             when (annotation) {
                 is Param -> annotation.value
-                else -> error("Argument #$i of #$name must be annotated with @${Param::class.java.simpleName}")
+                else -> throw IllegalArgumentException("Argument #$i of #$name must be annotated with @${Param::class.java.simpleName}")
             }
         }
-        .mapIndexed { i, name -> name to args[i] }
-        .associate { it }
 }
 
 val Method.resultGenericTypeArgument: Type
