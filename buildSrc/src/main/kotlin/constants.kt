@@ -15,16 +15,16 @@
  */
 
 object Dependencies {
-    const val android = "com.google.android:android:1.6_r2"
-    const val rxjava = "io.reactivex.rxjava2:rxjava:2.2.14"
-    const val okhttp = "com.squareup.okhttp3:okhttp:4.2.2"
+    const val android = "com.google.android:android:4.1.1.4"
+    const val rxjava = "io.reactivex.rxjava2:rxjava:2.2.19"
+    const val okhttp = "com.squareup.okhttp3:okhttp:4.7.2"
     const val gson = "com.google.code.gson:gson:2.8.6"
 
     // Tests
-    const val junit = "org.junit.jupiter:junit-jupiter:5.5.2"
-    const val mockk = "io.mockk:mockk:1.9.3"
-    const val kluent = "org.amshove.kluent:kluent:1.59"
-    const val mockWebServer = "com.squareup.okhttp3:mockwebserver:4.4.0"
+    const val junit = "org.junit.jupiter:junit-jupiter:5.6.2"
+    const val mockk = "io.mockk:mockk:1.10.0"
+    const val kluent = "org.amshove.kluent:kluent:1.61"
+    const val mockWebServer = "com.squareup.okhttp3:mockwebserver:4.7.2"
 }
 
 object DefaultValues {
