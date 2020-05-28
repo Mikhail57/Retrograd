@@ -22,8 +22,7 @@ import okhttp3.HttpUrl
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
-import ru.mustakimov.jsonrpc2.exception.BusinessException
-import ru.mustakimov.jsonrpc2.exception.SystemException
+import ru.mustakimov.jsonrpc2.exception.*
 import ru.mustakimov.jsonrpc2.internal.JsonRpcRequest
 import ru.mustakimov.jsonrpc2.internal.JsonRpcResponse
 import java.lang.reflect.Method
@@ -66,23 +65,32 @@ class ServiceMethod<T> private constructor(
                         emitter.onError(Exception(response.message))
                 } else {
                     val responseType = method.resultGenericTypeArgument
-                    val serverResponse = retrograd.gson.fromJson<JsonRpcResponse>(
+                    val serverResponse = retrograd.gson.fromJson(
                         response.body?.charStream(),
                         JsonRpcResponse::class.java
                     )
-                    if (serverResponse?.error?.code != null) {
-                        if (serverResponse.error.code > 0) {
-                            if (!emitter.isDisposed)
-                                emitter.onError(BusinessException(request, serverResponse.error))
-                        } else {
-                            if (!emitter.isDisposed)
-                                emitter.onError(SystemException(request, serverResponse.error))
-                        }
+                    val error = serverResponse.error
+                    if (error != null) {
+                        if (!emitter.isDisposed)
+                            emitter.onError(
+                                when (error.code) {
+                                    -32700 -> ParseError(error.message)
+                                    -32600 -> InvalidRequestError(error.message)
+                                    -32601 -> MethodNotFoundError(error.message)
+                                    -32602 -> InvalidParamsError(error.message)
+                                    -32603 -> InternalError(error.message)
+                                    in -32000 downTo -32099 -> ServerError(error.code, error.message)
+                                    else -> JsonRpcError(error.code, error.message)
+                                }
+                            )
                     } else {
                         val result =
                             retrograd.gson.fromJson<Any>(serverResponse.result, responseType)
                         if (!emitter.isDisposed)
-                            emitter.onSuccess(result)
+                            if (result != null)
+                                emitter.onSuccess(result)
+                            else
+                                emitter.onError(EmptyResponseException())
                     }
                 }
             } catch (t: Throwable) {

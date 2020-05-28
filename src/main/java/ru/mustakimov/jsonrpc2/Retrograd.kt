@@ -101,8 +101,8 @@ class Retrograd private constructor(
         if (!service.isInterface) {
             throw IllegalArgumentException("API declaration must be interface")
         }
-        if (service.getAnnotation(JsonRpc::class.java) == null) {
-            throw IllegalArgumentException("API declaration must be annotated with @${JsonRpc::class.java.simpleName}")
+        if (service.getAnnotation(JsonRpcService::class.java) == null) {
+            throw IllegalArgumentException("API declaration must be annotated with @${JsonRpcService::class.java.simpleName}")
         }
 
         val check: Deque<Class<*>> = ArrayDeque()
@@ -121,7 +121,7 @@ class Retrograd private constructor(
     }
 
     private fun <T> getServiceEndpoint(service: Class<T>): String {
-        val annotation = service.getAnnotation(JsonRpc::class.java)
+        val annotation = service.getAnnotation(JsonRpcService::class.java)
         return annotation.value
     }
 

@@ -31,18 +31,18 @@ For the other build systems guides, please visit [Bintray](https://bintray.com/r
 ### Interface
 Interface for JSON RPC 2.0 API endpoint
 ```kotlin
-@JsonRpc("inquiry/rpc")
+@JsonRpcSerivce("inquiry/rpc")
 interface InquiryApi {
     @JsonRpcMethod("get")
     fun getInquiry(
-            @Param("sessionId") sessionId: String,
-            @Param("service") service: String,
-            @Param("params") params: Map<String, Any>
+            @JsonRpcParam("sessionId") sessionId: String,
+            @JsonRpcParam("service") service: String,
+            @JsonRpcParam("params") params: Map<String, Any>
     ): Single<InquiryResult>
 }
 ```
 
-`@JsonRpc("inquiry/rpc")` - required annotation for the `interface`. As an optional parameter you can provide URL to be 
+`@JsonRpcSerivce("inquiry/rpc")` - required annotation for the `interface`. As an optional parameter you can provide URL to be 
 resolved against `baseUrl` (described below).
 
 `@JsonRpcMethod("get")` - annotation to mark current method as JSON RPC method. Return type of the function marked with 
@@ -51,7 +51,7 @@ used in JSON RPC 2.0 request). You can specify, whenever this remote procedure i
 params, by specifying `namedParams` param of this annotation. When it's `true`, method will be invoked with named params,
 otherwise with unnamed params.
 
-`@Param("sessionId")` - annotation used to mark current param as a named param in JSON RPC 2.0 method call.
+`@JsonRpcParam("sessionId")` - annotation used to mark current param as a named param in JSON RPC 2.0 method call.
 As an annotation parameter there is a name of this named param. RPC method with unnamed params will ignore name.
 
 ### Retrograd object creation
@@ -73,5 +73,5 @@ val api: InquiryApi = retrograd.create(InquiryApi::class.java)
 ### Kotlin extensions
 You can create API instance via Kotlin extension function, like
 ```kotlin
-val api: InquiryApi = retrograd.create<InquiryApi>()
+val api: InquiryApi = retrograd.create()
 ```

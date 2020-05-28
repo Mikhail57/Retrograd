@@ -20,7 +20,7 @@ import com.google.gson.annotations.SerializedName
 
 sealed class JsonRpcRequest(
     @SerializedName("id")
-    val id: Long,
+    val id: Long?,
     @SerializedName("method")
     val method: String
 ) {
@@ -28,7 +28,7 @@ sealed class JsonRpcRequest(
     val jsonrpc: String = "2.0"
 
     class JsonRpcNamedRequest(
-        id: Long,
+        id: Long?,
         method: String,
         @SerializedName("params")
         val params: Map<String, Any?> = emptyMap()
@@ -57,7 +57,7 @@ sealed class JsonRpcRequest(
     }
 
     class JsonRpcUnnamedRequest(
-        id: Long,
+        id: Long?,
         method: String,
         @SerializedName("params")
         val params: List<Any?> = emptyList()

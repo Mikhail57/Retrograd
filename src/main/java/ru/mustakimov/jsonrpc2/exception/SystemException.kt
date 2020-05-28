@@ -19,6 +19,10 @@ package ru.mustakimov.jsonrpc2.exception
 import ru.mustakimov.jsonrpc2.internal.JsonRpcError
 import ru.mustakimov.jsonrpc2.internal.JsonRpcRequest
 
+@Deprecated(
+    message = "Use exception mapper. This exception no longer used",
+    level = DeprecationLevel.ERROR
+)
 class SystemException(
     request: JsonRpcRequest,
     error: JsonRpcError,

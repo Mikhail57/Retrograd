@@ -17,7 +17,7 @@
 package ru.mustakimov.jsonrpc2;
 
 class JavaInterfaces {
-    @JsonRpc("/")
+    @JsonRpcService("/")
     interface DefaultJavaInterface {
         default Integer sum(int a, int b) {
             return a + b;
