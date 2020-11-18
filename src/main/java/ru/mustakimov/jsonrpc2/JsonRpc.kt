@@ -19,6 +19,11 @@ package ru.mustakimov.jsonrpc2
 @Retention(AnnotationRetention.RUNTIME)
 @MustBeDocumented
 @Target(AnnotationTarget.CLASS)
+@Deprecated(
+    message = "Use JsonRpcService instead. This class will be removed in 0.4 version",
+    replaceWith = ReplaceWith("ru.mustakimov.jsonrpc2.JsonRpcService"),
+    level = DeprecationLevel.ERROR
+)
 annotation class JsonRpc(
     /**
      * Json RPC endpoint url

@@ -25,58 +25,59 @@ import org.amshove.kluent.`should not be equal to`
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
+import ru.mustakimov.jsonrpc2.exception.ParseError
 import java.util.concurrent.TimeUnit
 
 internal class RetrogradTest {
     var server: MockWebServer = MockWebServer()
 
-    @JsonRpc("/")
+    @JsonRpcService("/")
     interface Valid {
         @JsonRpcMethod("plus")
         fun validNamedPlusMethod(
-            @Param("a") a: Int,
-            @Param("b") b: Int
+            @JsonRpcParam("a") a: Int,
+            @JsonRpcParam("b") b: Int
         ): Single<Int>
 
         @JsonRpcMethod("plus", namedParams = false)
         fun validUnnamedPlusMethod(
-            @Param("a") a: Int,
-            @Param("b") b: Int
+            @JsonRpcParam("a") a: Int,
+            @JsonRpcParam("b") b: Int
         ): Single<Int>
 
         @JsonRpcMethod("plus")
         fun invalidParamNamedPlusMethod(
             a: Int,
-            @Param("b") b: Int
+            @JsonRpcParam("b") b: Int
         ): Single<Int>
 
         @JsonRpcMethod("plus", namedParams = false)
         fun invalidParamUnnamedPlusMethod(
             a: Int,
-            @Param("b") b: Int
+            @JsonRpcParam("b") b: Int
         ): Single<Int>
 
         @JsonRpcMethod("plus")
         fun invalidReturnType(
-            @Param("a") a: Int,
-            @Param("b") b: Int
+            @JsonRpcParam("a") a: Int,
+            @JsonRpcParam("b") b: Int
         ): Int
     }
 
-    @JsonRpc("/")
+    @JsonRpcService("/")
     interface Extending : Valid
 
     interface UnannotatedExtending : Valid
 
     interface Unannotated
 
-    @JsonRpc("/")
+    @JsonRpcService("/")
     interface TypeParam<T>
 
-    @JsonRpc("/")
+    @JsonRpcService("/")
     interface ExtendingTypeParameter : TypeParam<String>
 
-    @JsonRpc("/")
+    @JsonRpcService("/")
     class InvalidClass
 
     @Test
@@ -149,6 +150,17 @@ internal class RetrogradTest {
     }
 
     @Test
+    fun `Should return parse error`() {
+        val retrograd = Retrograd.Builder().baseUrl(server.url("/")).build()
+        val valid = retrograd.create(Valid::class)
+
+        server.enqueue(MockResponse().setBody("""{"jsonrpc": "2.0", "error": {"code": -32700, "message": "Parse error"}, "id": null}"""))
+
+        val testObserver = valid.validNamedPlusMethod(1, 2).test()
+        testObserver.assertError(ParseError::class.java)
+    }
+
+    @Test
     fun `Should call valid method with unnamed params`() {
         val retrograd = Retrograd.Builder().baseUrl(server.url("/")).build()
         val valid = retrograd.create(Valid::class)
@@ -171,7 +183,7 @@ internal class RetrogradTest {
 
         assertThrows<IllegalArgumentException> {
             valid.invalidParamNamedPlusMethod(1, 2)
-        }.message!! `should contain` "Argument #0 of #invalidParamNamedPlusMethod must be annotated with @Param"
+        }.message!! `should contain` "Argument #0 of #invalidParamNamedPlusMethod must be annotated with @JsonRpcParam"
     }
 
     @Test
@@ -181,7 +193,7 @@ internal class RetrogradTest {
 
         assertThrows<IllegalArgumentException> {
             valid.invalidParamUnnamedPlusMethod(1, 2)
-        }.message!! `should contain` "Argument #0 of #invalidParamUnnamedPlusMethod must be annotated with @Param"
+        }.message!! `should contain` "Argument #0 of #invalidParamUnnamedPlusMethod must be annotated with @JsonRpcParam"
     }
 
     @Test

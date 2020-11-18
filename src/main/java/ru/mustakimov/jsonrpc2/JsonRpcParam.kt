@@ -17,27 +17,11 @@
 package ru.mustakimov.jsonrpc2
 
 @Retention(AnnotationRetention.RUNTIME)
-@Target(AnnotationTarget.FUNCTION)
-annotation class JsonRpcMethod(
+@MustBeDocumented
+@Target(AnnotationTarget.VALUE_PARAMETER)
+annotation class JsonRpcParam(
     /**
-     * Json RPC method name
+     * Parameter name
      */
-    val value: String,
-
-    /**
-     * Use named (`by-name`) or unnamed (`by-position`) params.
-     *
-     * When `true`, uses [Param]'s [value][Param.value] as notation to the param name, otherwise pass params name from code.
-     *
-     * When `false`, uses [Param] as notation to param, passes in defined order.
-     *
-     * ---
-     * For more info visit JSON RPC specification: https://www.jsonrpc.org/specification#parameter_structures
-     */
-    val namedParams: Boolean = true,
-
-    /**
-     *
-     */
-    val notification: Boolean = false
+    val value: String
 )

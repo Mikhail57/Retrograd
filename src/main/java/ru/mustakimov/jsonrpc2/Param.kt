@@ -16,6 +16,14 @@
 
 package ru.mustakimov.jsonrpc2
 
+@Retention(AnnotationRetention.RUNTIME)
+@MustBeDocumented
+@Target(AnnotationTarget.VALUE_PARAMETER)
+@Deprecated(
+    message = "Use JsonRpcParam instead",
+    replaceWith = ReplaceWith("ru.mustakimov.jsonrpc2.JsonRpcParam"),
+    level = DeprecationLevel.ERROR
+)
 annotation class Param(
     /**
      * Parameter name

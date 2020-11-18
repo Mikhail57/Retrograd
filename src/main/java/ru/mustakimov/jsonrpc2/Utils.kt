@@ -38,12 +38,12 @@ fun Method.jsonRpcUnnamedParameters(args: Array<out Any?>): List<Any?> {
 private fun Method.checkArguments(): List<String> {
     return parameterAnnotations
         .map {
-            it?.firstOrNull { p -> Param::class.java.isInstance(p) }
+            it?.firstOrNull { p -> JsonRpcParam::class.java.isInstance(p) }
         }
         .mapIndexed { i, annotation ->
             when (annotation) {
-                is Param -> annotation.value
-                else -> throw IllegalArgumentException("Argument #$i of #$name must be annotated with @${Param::class.java.simpleName}")
+                is JsonRpcParam -> annotation.value
+                else -> throw IllegalArgumentException("Argument #$i of #$name must be annotated with @${JsonRpcParam::class.java.simpleName}")
             }
         }
 }

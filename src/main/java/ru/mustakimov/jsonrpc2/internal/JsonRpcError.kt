@@ -16,7 +16,11 @@
 
 package ru.mustakimov.jsonrpc2.internal
 
+import com.google.gson.annotations.SerializedName
+
 data class JsonRpcError(
-    val code: Int?,
-    val message: String?
+    @SerializedName("code")
+    val code: Int,
+    @SerializedName("message")
+    val message: String
 )

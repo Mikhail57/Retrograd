@@ -17,9 +17,15 @@
 package ru.mustakimov.jsonrpc2.internal
 
 import com.google.gson.JsonElement
+import com.google.gson.annotations.SerializedName
 
 data class JsonRpcResponse(
-    val id: Long,
-    val result: JsonElement,
-    val error: JsonRpcError
+    @SerializedName("id")
+    val id: Long?,
+
+    @SerializedName("result")
+    val result: JsonElement?,
+
+    @SerializedName("error")
+    val error: JsonRpcError?
 )

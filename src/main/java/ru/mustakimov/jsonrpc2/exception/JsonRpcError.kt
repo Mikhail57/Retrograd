@@ -14,21 +14,16 @@
  * limitations under the License.
  */
 
-package ru.mustakimov.jsonrpc2
+package ru.mustakimov.jsonrpc2.exception
 
-import okhttp3.mockwebserver.MockWebServer
-import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.Test
-
-internal class KotlinExtensionsTest {
-    private val server = MockWebServer()
-
-    @JsonRpcService("/")
-    interface Valid
-
-    @Test
-    fun `create extension method`() {
-        val retrograd = Retrograd.Builder().baseUrl(server.url("/")).build()
-        retrograd.create<Valid>()
+/**
+ * Base class for all server-side JSON RPC errors
+ */
+open class JsonRpcError(
+    val code: Int,
+    override val message: String
+) : Exception(message) {
+    override fun toString(): String {
+        return "JsonRpcError $code: $message"
     }
 }

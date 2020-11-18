@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-package ru.mustakimov.jsonrpc2
+package ru.mustakimov.jsonrpc2.exception
 
-import okhttp3.mockwebserver.MockWebServer
-import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.Test
+/**
+ * Server-side error
+ *
+ * Reserved for implementation-defined server-errors.
+ */
+class ServerError(code: Int, message: String) : JsonRpcError(code = code, message = message) {
+    init {
+        if (code !in -32000 downTo -32099) {
+            throw IllegalArgumentException("Error code should be in range of -32000 to -32099")
+        }
+    }
 
-internal class KotlinExtensionsTest {
-    private val server = MockWebServer()
-
-    @JsonRpcService("/")
-    interface Valid
-
-    @Test
-    fun `create extension method`() {
-        val retrograd = Retrograd.Builder().baseUrl(server.url("/")).build()
-        retrograd.create<Valid>()
+    override fun toString(): String {
+        return "ServerError $code: $message"
     }
 }
