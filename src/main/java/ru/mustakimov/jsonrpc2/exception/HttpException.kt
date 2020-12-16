@@ -16,5 +16,17 @@
 
 package ru.mustakimov.jsonrpc2.exception
 
-class HttpException : RuntimeException() {
+import okhttp3.Response
+
+public class HttpException(
+    public val rawResponse: Response
+) : RuntimeException() {
+    public val httpCode: Int
+        @JvmName("httpCode")
+        get() = rawResponse.code
+
+
+    public val httpMessage: String
+        @JvmName("httpMessage")
+        get() = rawResponse.message
 }

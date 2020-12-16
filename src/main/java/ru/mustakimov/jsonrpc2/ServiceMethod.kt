@@ -62,7 +62,7 @@ class ServiceMethod<T> private constructor(
                 val response = call.execute()
                 if (!response.isSuccessful) {
                     if (!emitter.isDisposed)
-                        emitter.onError(Exception(response.message))
+                        emitter.onError(HttpException(response))
                 } else {
                     val responseType = method.resultGenericTypeArgument
                     val serverResponse = retrograd.gson.fromJson(
