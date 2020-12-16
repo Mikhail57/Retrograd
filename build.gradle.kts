@@ -28,7 +28,7 @@ plugins {
     kotlin("jvm") version "1.4.20"
     id("org.jetbrains.dokka") version "1.4.20"
     id("nebula.dependency-lock") version "11.1.1"
-    id("nebula.nebula-bintray") version "8.5.0"
+    id("nebula.nebula-bintray") version "8.3.0"
     id("nebula.maven-publish") version "17.3.2"
     id("nebula.source-jar") version "17.3.2"
     id("nebula.javadoc-jar") version "17.3.2"
