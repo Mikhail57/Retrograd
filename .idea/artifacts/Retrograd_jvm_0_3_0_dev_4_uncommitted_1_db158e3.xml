@@ -1,0 +1,6 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Retrograd-jvm-0.3.0-dev.4.uncommitted+1.db158e3">
+    <output-path>$PROJECT_DIR$/build/libs</output-path>
+    <root id="archive" name="Retrograd-jvm-0.3.0-dev.4.uncommitted+1.db158e3.jar" />
+  </artifact>
+</component>

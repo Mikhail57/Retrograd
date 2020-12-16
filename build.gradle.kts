@@ -23,10 +23,10 @@ buildscript {
 }
 
 plugins {
-    id("nebula.kotlin") version "1.3.72"
-    id("org.jetbrains.dokka") version "0.10.1"
+    kotlin("multiplatform") version "1.4.10"
+    id("org.jetbrains.dokka") version "1.4.10.2"
     id("nebula.dependency-lock") version "9.0.0"
-    id("nebula.nebula-bintray") version "8.4.0"
+    id("nebula.nebula-bintray") version "8.3.0"
     id("nebula.maven-publish") version "17.2.1"
     id("nebula.source-jar") version "17.2.1"
     id("nebula.javadoc-jar") version "17.2.1"
@@ -42,28 +42,83 @@ description = "JSON RPC 2.0 Client Library"
 
 
 tasks {
-    dokka {
-        outputFormat = "javadoc"
+//    test {
+//        useJUnitPlatform()
+//    }
+}
+
+kotlin {
+    jvm {
+        compilations.all {
+            kotlinOptions.jvmTarget = "11"
+        }
     }
-    test {
-        useJUnitPlatform()
+    js {
+        browser {
+            testTask {
+                useKarma {
+                    useChromeHeadless()
+                    webpackConfig.cssSupport.enabled = true
+                }
+            }
+        }
+    }
+    val hostOs = System.getProperty("os.name")
+    val isMingwX64 = hostOs.startsWith("Windows")
+    val nativeTarget = when {
+        hostOs == "Mac OS X" -> macosX64("native")
+        hostOs == "Linux" -> linuxX64("native")
+        isMingwX64 -> mingwX64("native")
+        else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
+    }
+
+
+    sourceSets {
+        val commonMain by getting {
+            dependencies {
+                implementation(Dependencies.ktorClient)
+
+            }
+        }
+        val commonTest by getting {
+            dependencies {
+                implementation(kotlin("test-common"))
+                implementation(kotlin("test-annotations-common"))
+            }
+        }
+        val jvmMain by getting
+        val jvmTest by getting {
+            dependencies {
+                implementation(kotlin("test-junit5"))
+            }
+        }
+        val jsMain by getting
+        val jsTest by getting {
+            dependencies {
+                implementation(kotlin("test-js"))
+            }
+        }
+        val nativeMain by getting
+        val nativeTest by getting
     }
 }
 
-dependencies {
-    compileOnly(Dependencies.android)
-
-    implementation(Dependencies.okhttp)
-    implementation(Dependencies.rxjava)
-    implementation(Dependencies.gson)
-
-    implementation(kotlin("stdlib"))
-
-    testImplementation(Dependencies.junit)
-    testImplementation(Dependencies.mockk)
-    testImplementation(Dependencies.kluent)
-    testImplementation(Dependencies.mockWebServer)
-}
+//dependencies {
+//    compileOnly(Dependencies.android)
+//
+//    implementation(Dependencies.okhttp)
+//    implementation(Dependencies.rxjava)
+//    implementation(Dependencies.gson)
+//    implementation(Dependencies.ktorClient)
+//    implementation(Dependencies.ktorClientOkhttp)
+//
+//    dokkaHtmlPlugin("org.jetbrains.dokka:kotlin-as-java-plugin:1.4.10.2")
+//
+//    testImplementation(Dependencies.junit)
+//    testImplementation(Dependencies.mockk)
+//    testImplementation(Dependencies.kluent)
+//    testImplementation(Dependencies.mockWebServer)
+//}
 
 bintray {
     user.set(findLocalProperty("jcenter.user"))

@@ -16,6 +16,9 @@
 
 package ru.mustakimov.jsonrpc2
 
+import io.ktor.client.request.*
+import io.ktor.http.*
+import io.ktor.http.content.*
 import io.reactivex.Single
 import io.reactivex.SingleEmitter
 import okhttp3.HttpUrl
@@ -50,7 +53,12 @@ class ServiceMethod<T> private constructor(
             }
         }
         val payload = retrograd.gson.toJson(request)
-        val req = Request.Builder()
+        val req = HttpRequestBuilder {
+            takeFrom(url.toUri())
+        }.apply {
+            method = HttpMethod.Post
+            body = OutgoingContent.
+        }
             .post(payload.toRequestBody("application/json".toMediaType()))
             .url(url)
             .build()

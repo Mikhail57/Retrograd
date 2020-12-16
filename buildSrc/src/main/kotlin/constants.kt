@@ -17,8 +17,10 @@
 object Dependencies {
     const val android = "com.google.android:android:4.1.1.4"
     const val rxjava = "io.reactivex.rxjava2:rxjava:2.2.19"
-    const val okhttp = "com.squareup.okhttp3:okhttp:4.7.2"
+    const val okhttp = "com.squareup.okhttp3:okhttp:4.9.0"
     const val gson = "com.google.code.gson:gson:2.8.6"
+    const val ktorClient = "io.ktor:ktor-client-core:1.4.1"
+    const val ktorClientOkhttp = "io.ktor:ktor-client-okhttp:1.4.1"
 
     // Tests
     const val junit = "org.junit.jupiter:junit-jupiter:5.6.2"

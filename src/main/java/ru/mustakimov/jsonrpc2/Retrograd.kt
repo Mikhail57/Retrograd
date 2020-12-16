@@ -17,7 +17,8 @@
 package ru.mustakimov.jsonrpc2
 
 import com.google.gson.Gson
-import okhttp3.Call
+import io.ktor.client.*
+import io.ktor.client.engine.okhttp.*
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient
@@ -46,7 +47,7 @@ import kotlin.reflect.KClass
  */
 class Retrograd private constructor(
     val gson: Gson,
-    val callFactory: Call.Factory,
+    val httpClient: HttpClient,
     val baseUrl: HttpUrl,
     val interceptors: List<Interceptor>
 ) {
@@ -239,7 +240,11 @@ class Retrograd private constructor(
             val client = okHttpClient ?: OkHttpClient()
             val gson = this.gson ?: Gson()
 
-            return Retrograd(gson, client, url, interceptors)
+            return Retrograd(gson, HttpClient(OkHttp) {
+                engine {
+                    preconfigured = client
+                }
+            }, url, interceptors)
         }
     }
 }
