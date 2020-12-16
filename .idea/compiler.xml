@@ -3,6 +3,10 @@
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel target="11">
       <module name="retrograd" target="1.7" />
+      <module name="Retrograd.commonMain" target="11" />
+      <module name="Retrograd.commonTest" target="11" />
+      <module name="Retrograd.jvmMain" target="11" />
+      <module name="Retrograd.jvmTest" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>

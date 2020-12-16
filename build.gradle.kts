@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import java.io.FileInputStream
+import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
 import java.util.*
 
 buildscript {
@@ -23,14 +24,14 @@ buildscript {
 }
 
 plugins {
-    id("nebula.kotlin") version "1.3.72"
-    id("org.jetbrains.dokka") version "0.10.1"
-    id("nebula.dependency-lock") version "9.0.0"
-    id("nebula.nebula-bintray") version "8.4.0"
-    id("nebula.maven-publish") version "17.2.1"
-    id("nebula.source-jar") version "17.2.1"
-    id("nebula.javadoc-jar") version "17.2.1"
-    id("nebula.release") version "15.0.2"
+    kotlin("jvm") version "1.4.20"
+    id("org.jetbrains.dokka") version "1.4.20"
+    id("nebula.dependency-lock") version "11.1.1"
+    id("nebula.nebula-bintray") version "8.5.0"
+    id("nebula.maven-publish") version "17.3.2"
+    id("nebula.source-jar") version "17.3.2"
+    id("nebula.javadoc-jar") version "17.3.2"
+    id("nebula.release") version "15.3.0"
 }
 
 repositories {
@@ -42,12 +43,22 @@ description = "JSON RPC 2.0 Client Library"
 
 
 tasks {
-    dokka {
-        outputFormat = "javadoc"
+    dokkaJavadoc {
+        enabled = true
     }
+    dokkaHtml {
+        enabled = true
+    }
+//    dokka {
+//        outputFormat = "javadoc"
+//    }
     test {
         useJUnitPlatform()
     }
+}
+
+kotlin {
+    explicitApi = ExplicitApiMode.Warning
 }
 
 dependencies {
