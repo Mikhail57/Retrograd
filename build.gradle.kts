@@ -15,6 +15,7 @@
  */
 import java.io.FileInputStream
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.util.*
 
 buildscript {
@@ -59,6 +60,12 @@ tasks {
 
 kotlin {
     explicitApi = ExplicitApiMode.Warning
+}
+
+tasks.withType<KotlinCompile>().configureEach {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }
 
 dependencies {

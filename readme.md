@@ -14,7 +14,7 @@ Android users should place this into the `allprojects` section of base `build.gr
 And add dependency
 ```groovy
 dependencies {
-    implementation 'com.github.mikhail57:Retrograd:0.2.0'
+    implementation 'com.github.mikhail57:Retrograd:0.3.1'
 }
 ```
 Please, check current version of the library at [Bintray](https://bintray.com/retrograd/Retrograd/retrograd)!
